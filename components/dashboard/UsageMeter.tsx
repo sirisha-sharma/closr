@@ -15,7 +15,7 @@ interface UsageMeterProps {
 export function UsageMeter({ usage }: UsageMeterProps) {
   const isUnlimited = usage.limit === 'unlimited';
   const percentage = isUnlimited ? 0 : Math.min((usage.used / (usage.limit as number)) * 100, 100);
-  const isNearLimit = !isUnlimited && percentage >= 80;
+  const isNearLimit = !isUnlimited && percentage >= 90;
   const isAtLimit = !isUnlimited && usage.used >= (usage.limit as number);
 
   return (

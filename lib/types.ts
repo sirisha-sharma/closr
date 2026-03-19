@@ -21,6 +21,17 @@ export type DISCLabel = 'Dominant' | 'Influential' | 'Steady' | 'Conscientious';
 export interface DISCProfile {
   disc_type: DISCType;
   disc_label: DISCLabel;
+  big_five?: {
+    openness: number;
+    conscientiousness: number;
+    extraversion: number;
+    agreeableness: number;
+    neuroticism: number;
+  };
+  negotiator_style?: 'Analyst' | 'Assertive' | 'Accommodator';
+  hidden_motivation?: string;
+  system_1_triggers?: string[];
+  psychological_drivers?: string[];
   confidence: number;
   summary: string;
   communication_style: {
@@ -32,7 +43,9 @@ export interface DISCProfile {
   pain_triggers: string[];
   power_words: string[];
   avoid_words: string[];
+  cialdini_levers?: string[];
   opening_strategy: string;
+  win_probability_boost?: string;
 }
 
 export interface ProposalSection {
@@ -40,25 +53,38 @@ export interface ProposalSection {
   content: string;
 }
 
+export interface ControlledOption {
+  name: string;
+  price: string;
+  psych_anchor: string;
+}
+
 export interface ProposalContent {
   headline: string;
+  objection_preempt?: string;
   hook: string;
   problem_section: ProposalSection;
   solution_section: ProposalSection;
-  scope_section: { title: string; items: string[] };
-  timeline: string;
-  investment: { note: string; range: string };
+  controlled_options?: ControlledOption[];
+  // legacy fields kept for backwards compatibility with saved proposals
+  scope_section?: { title: string; items: string[] };
+  timeline?: string;
+  investment?: { note?: string; framing?: string; range: string };
   cta: string;
   ps_line: string;
+  estimated_conversion_lift?: string;
+  time_saved_hours?: string;
 }
 
 export interface EmailVariant {
   variant_name: string;
-  strategy: string;
   subject_line: string;
-  preview_text: string;
   body: string;
-  psychology_note: string;
+  lever_used?: string;
+  // legacy fields
+  strategy?: string;
+  preview_text?: string;
+  psychology_note?: string;
 }
 
 export interface EmailVariants {
@@ -66,8 +92,15 @@ export interface EmailVariants {
   follow_up: {
     subject_line: string;
     body: string;
-    psychology_note: string;
+    psych_rationale?: string;
+    // legacy
+    psychology_note?: string;
   };
+  win_rate_analysis?: {
+    predicted_lift: string;
+  };
+  // legacy
+  overall_win_probability?: string;
 }
 
 export interface Proposal {

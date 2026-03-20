@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to create checkout' }, { status: 500 });
     }
 
-    return NextResponse.json({ url: transaction.checkout.url });
+    return NextResponse.json({ url: transaction.checkout.url, priceId });
   } catch (error) {
     console.error('Checkout error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Pencil, Trash2, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Pencil, Trash2, ExternalLink, Link2, Check as CheckIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -39,6 +39,7 @@ export default function ProposalDetailPage({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [statusUpdating, setStatusUpdating] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
 
   useEffect(() => {
     fetchProposal();
@@ -78,6 +79,12 @@ export default function ProposalDetailPage({
     } finally {
       setStatusUpdating(false);
     }
+  };
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(`${window.location.origin}/p/${proposal?.id}`);
+    setShareCopied(true);
+    setTimeout(() => setShareCopied(false), 2000);
   };
 
   const handleDelete = async () => {
@@ -154,6 +161,13 @@ export default function ProposalDetailPage({
 
         <div className="flex gap-2 flex-wrap">
           <PDFExport proposal={proposal} />
+          <button
+            onClick={handleShare}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-[#71717A] hover:text-[#FAFAFA] hover:bg-[#18181B] border border-[#27272A] hover:border-[#3F3F46] transition-all"
+          >
+            {shareCopied ? <CheckIcon size={14} className="text-[#22C55E]" /> : <Link2 size={14} />}
+            {shareCopied ? 'Link copied!' : 'Share link'}
+          </button>
           <Button
             variant="danger"
             size="sm"

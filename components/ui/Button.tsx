@@ -75,10 +75,18 @@ export function Button({
     });
   }
 
+  const isPrimary = variant === 'primary';
+
   return (
     <motion.button
-      whileTap={{ scale: isDisabled ? 1 : 0.98 }}
-      whileHover={{ scale: isDisabled ? 1 : 1.01 }}
+      whileHover={isDisabled ? undefined : isPrimary
+        ? { y: -1, boxShadow: '0 8px 25px rgba(249,115,22,0.35)' }
+        : { y: -1 }
+      }
+      whileTap={isDisabled ? undefined : isPrimary
+        ? { y: 1, boxShadow: '0 2px 8px rgba(249,115,22,0.2)' }
+        : { y: 1 }
+      }
       transition={{ type: 'spring', stiffness: 400, damping: 25 }}
       className={baseClass}
       disabled={isDisabled}

@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { StatsCards } from '@/components/dashboard/StatsCards';
 import { RecentProposals } from '@/components/dashboard/RecentProposals';
@@ -47,10 +47,14 @@ export default async function DashboardPage() {
     .eq('user_id', user.id);
 
   const allProposals = allProposalsResult.data || [];
+
+  if (allProposals.length === 0) {
+    redirect('/generate');
+  }
+
   const wonCount = allProposals.filter((p) => p.status === 'won').length;
-  const sentCount = allProposals.filter((p) => p.status === 'sent').length;
-  const winRate =
-    sentCount > 0 ? Math.round((wonCount / sentCount) * 100) : 0;
+  const totalClosed = wonCount + (allProposals.filter((p) => p.status === 'lost').length);
+  const winRate = totalClosed > 0 ? Math.round((wonCount / totalClosed) * 100) : 0;
 
   // Usage
   const limits = PLAN_LIMITS[profile.plan as keyof typeof PLAN_LIMITS];
@@ -75,13 +79,13 @@ export default async function DashboardPage() {
         <div>
           <h1 className="text-2xl font-bold text-[#FAFAFA]">
             Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 17 ? 'afternoon' : 'evening'},{' '}
-            {firstName} 👋
+            {firstName}.
           </h1>
           <p className="text-sm text-[#71717A] mt-1">
             Here&apos;s an overview of your proposals and activity.
           </p>
         </div>
-        <Button icon={<Sparkles size={16} />} asChild>
+        <Button asChild>
           <Link href="/generate">New Proposal</Link>
         </Button>
       </div>
@@ -91,7 +95,7 @@ export default async function DashboardPage() {
         stats={{
           totalProposals: allProposals.length,
           wonProposals: wonCount,
-          sentProposals: sentCount,
+          sentProposals: allProposals.filter((p) => p.status === 'sent').length,
           winRate,
         }}
       />

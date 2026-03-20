@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Brain, CheckCircle2 } from 'lucide-react';
+import { FileEdit, User, CheckCircle2, Link2, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { ProspectInput } from '@/components/generate/ProspectInput';
 import { ServiceInput } from '@/components/generate/ServiceInput';
@@ -12,6 +12,7 @@ import { EmailVariants } from '@/components/generate/EmailVariants';
 import { GenerationSkeleton } from '@/components/generate/GenerationSkeleton';
 import { PDFExport } from '@/components/generate/PDFExport';
 import { type DISCProfile, type ProposalContent, type EmailVariants as EmailVariantsType, type Proposal } from '@/lib/types';
+import { DISC_DISPLAY } from '@/lib/constants';
 import Link from 'next/link';
 
 type Step = 'input' | 'analyzing' | 'service' | 'generating' | 'output';
@@ -23,8 +24,8 @@ interface GeneratedData {
 }
 
 const stepLabels = [
-  { id: 'input', label: 'Prospect Bio', icon: Brain },
-  { id: 'service', label: 'Your Service', icon: Sparkles },
+  { id: 'input', label: 'Prospect Bio', icon: User },
+  { id: 'service', label: 'Your Service', icon: FileEdit },
   { id: 'output', label: 'Generated', icon: CheckCircle2 },
 ];
 
@@ -35,6 +36,7 @@ export default function GeneratePage() {
   const [prospectName, setProspectName] = useState('');
   const [generatedData, setGeneratedData] = useState<GeneratedData | null>(null);
   const [activeTab, setActiveTab] = useState<'proposal' | 'emails'>('proposal');
+  const [copied, setCopied] = useState(false);
 
   const handleAnalyze = async (bio: string, name: string) => {
     setProspectBio(bio);
@@ -121,12 +123,11 @@ export default function GeneratePage() {
     <div className="flex flex-col gap-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-[#FAFAFA] flex items-center gap-2">
-          <Sparkles className="text-[#F97316]" size={22} />
-          Generate Proposal
+        <h1 className="text-2xl font-bold text-[#FAFAFA]">
+          New Proposal
         </h1>
         <p className="text-sm text-[#71717A] mt-1">
-          Analyze your prospect&apos;s psychology and generate a personalized proposal in minutes.
+          Paste any text about your prospect. We&apos;ll figure out how they think and write a proposal that speaks their language.
         </p>
       </div>
 
@@ -219,8 +220,19 @@ export default function GeneratePage() {
                   <span className="text-sm text-[#71717A]">for {prospectName}</span>
                 )}
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <PDFExport proposal={generatedData.proposal} />
+                <button
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(`${window.location.origin}/p/${generatedData.proposal.id}`);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }}
+                  className="text-xs text-[#71717A] hover:text-[#A1A1AA] transition-colors px-3 py-1.5 rounded-lg border border-[#27272A] hover:border-[#3F3F46] flex items-center gap-1.5"
+                >
+                  {copied ? <Check size={12} className="text-[#22C55E]" /> : <Link2 size={12} />}
+                  {copied ? 'Copied!' : 'Share link'}
+                </button>
                 <button
                   onClick={handleReset}
                   className="text-xs text-[#71717A] hover:text-[#F97316] transition-colors px-3 py-1.5 rounded-lg border border-[#27272A] hover:border-[#F97316]/30"
@@ -252,7 +264,7 @@ export default function GeneratePage() {
                   {discProfile.disc_type}
                 </div>
                 <span className="text-[#A1A1AA]">
-                  <span className="text-[#FAFAFA] font-medium">{discProfile.disc_label}</span> psychology applied to all outputs
+                  <span className="text-[#FAFAFA] font-medium">{DISC_DISPLAY[discProfile.disc_type]?.label ?? discProfile.disc_label}</span> communication style applied to all outputs
                 </span>
               </div>
             )}

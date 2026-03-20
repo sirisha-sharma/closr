@@ -1,35 +1,35 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ClipboardList, Brain, FileText, Mail } from 'lucide-react';
+import { ClipboardList, Search, FileText, Mail } from 'lucide-react';
 
 const steps = [
   {
     icon: ClipboardList,
     step: '01',
-    title: 'Paste the LinkedIn Bio',
-    description: 'Copy your prospect\'s LinkedIn About section or any professional bio text. The more text, the better the analysis.',
+    title: 'Paste their profile',
+    description: 'Drop in any text about your prospect — LinkedIn bio, email they sent you, website about page, or even a job posting.',
     color: '#F97316',
   },
   {
-    icon: Brain,
+    icon: Search,
     step: '02',
-    title: 'AI Analyzes Psychology',
-    description: 'Our AI detects DISC personality type from linguistic patterns — word choice, sentence structure, and communication style.',
+    title: 'Closr reads between the lines',
+    description: 'Our engine analyzes how they communicate, what drives their decisions, and what language gets their attention.',
     color: '#3B82F6',
   },
   {
     icon: FileText,
     step: '03',
-    title: 'Personalized Proposal Generated',
-    description: 'A full, client-ready proposal is crafted using language that resonates with their specific behavioral profile.',
+    title: 'Get a proposal that converts',
+    description: 'A complete, client-ready proposal built around how your prospect actually thinks — not a generic template.',
     color: '#22C55E',
   },
   {
     icon: Mail,
     step: '04',
-    title: '3 Cold Email Variants',
-    description: 'Three psychology-matched cold email approaches — Direct, Story, and Question — ready to copy and send.',
+    title: '3 email variants, ready to send',
+    description: 'Three different angles on the same outreach, each adapted to your prospect\'s communication style.',
     color: '#EAB308',
   },
 ];
@@ -45,12 +45,12 @@ export function HowItWorks() {
           transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
-          <p className="text-sm font-medium text-[#F97316] mb-3 uppercase tracking-wider">The Process</p>
-          <h2 className="font-serif text-3xl sm:text-5xl text-[#FAFAFA] mb-4">
+          <p className="text-sm font-medium text-[#F97316] mb-3 uppercase tracking-wider">How it works</p>
+          <h2 className="font-serif text-3xl sm:text-5xl text-[#FAFAFA] mb-4 tracking-[-0.02em]">
             From bio to proposal in 4 steps
           </h2>
-          <p className="text-[#71717A] text-lg max-w-xl mx-auto">
-            No more generic proposals. Every output is built around your prospect&apos;s psychology.
+          <p className="text-[#71717A] text-lg max-w-[55ch] mx-auto leading-[1.6]">
+            Stop copy-pasting the same pitch to every prospect. Your proposal should sound like you actually know them.
           </p>
         </motion.div>
 
@@ -64,12 +64,11 @@ export function HowItWorks() {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className="relative"
             >
-              {/* Connector line */}
               {index < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-8 left-full w-full h-px bg-gradient-to-r from-[#27272A] to-transparent z-10 -translate-x-6" />
+                <div className="hidden lg:block absolute top-8 left-full w-full h-px bg-linear-to-r from-[#27272A] to-transparent z-10 -translate-x-6" />
               )}
 
-              <div className="bg-[#18181B] border border-[#27272A] rounded-2xl p-6 hover:border-[#3F3F46] transition-all group h-full">
+              <div className="bg-[#0A0A0D] border border-[#27272A] rounded-2xl p-6 hover:border-[#3F3F46] transition-all group h-full">
                 <div className="flex items-start justify-between mb-4">
                   <div
                     className="w-12 h-12 rounded-xl flex items-center justify-center"
@@ -82,7 +81,7 @@ export function HowItWorks() {
                   </span>
                 </div>
                 <h3 className="text-base font-semibold text-[#FAFAFA] mb-2">{step.title}</h3>
-                <p className="text-sm text-[#71717A] leading-relaxed">{step.description}</p>
+                <p className="text-sm text-[#71717A] leading-[1.6]">{step.description}</p>
               </div>
             </motion.div>
           ))}

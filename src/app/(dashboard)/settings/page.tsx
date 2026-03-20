@@ -89,19 +89,40 @@ function SettingsContent() {
   const handleCheckout = async (plan: string) => {
     setCheckoutLoading(plan);
     try {
+      // Get price ID from API
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ plan }),
       });
       const data = await res.json();
-      if (res.ok && data.url) {
+      if (!res.ok) {
+        toast.error(data.error || 'Failed to start checkout');
+        return;
+      }
+
+      // Use Paddle.js overlay if priceId returned, otherwise redirect to URL
+      if (data.priceId && process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN) {
+        const { getPaddleClient } = await import('@/lib/paddle/paddle-client');
+        const paddle = await getPaddleClient();
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        paddle.Checkout.open({
+          items: [{ priceId: data.priceId, quantity: 1 }],
+          customData: { userId: user?.id },
+          settings: {
+            successUrl: `${window.location.origin}/settings?tab=billing&success=true`,
+            displayMode: 'overlay',
+            theme: 'dark',
+          },
+        });
+      } else if (data.url) {
         window.location.href = data.url;
       } else {
         toast.error(data.error || 'Failed to start checkout');
       }
     } catch {
-      toast.error('Checkout failed');
+      toast.error('Something went wrong. Mind trying again?');
     } finally {
       setCheckoutLoading(null);
     }

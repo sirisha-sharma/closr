@@ -1,10 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Brain, CheckCircle2, AlertCircle, MessageSquare, Zap } from 'lucide-react';
+import { CheckCircle2, AlertCircle, MessageSquare, Target, Copy, Check } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { type DISCProfile } from '@/lib/types';
 import { getDISCColor, getDISCBg } from '@/lib/utils';
+import { DISC_DISPLAY } from '@/lib/constants';
 
 interface PsychologyProfileProps {
   profile: DISCProfile;
@@ -13,6 +15,20 @@ interface PsychologyProfileProps {
 export function PsychologyProfile({ profile }: PsychologyProfileProps) {
   const color = getDISCColor(profile.disc_type);
   const bg = getDISCBg(profile.disc_type);
+  const [copiedWord, setCopiedWord] = useState<string | null>(null);
+
+  const discDisplay = DISC_DISPLAY[profile.disc_type] ?? {
+    label: profile.disc_label,
+    description: profile.summary,
+  };
+
+  const matchStrength = Math.round(profile.confidence * 100);
+
+  const copyWord = (word: string) => {
+    navigator.clipboard.writeText(word);
+    setCopiedWord(word);
+    setTimeout(() => setCopiedWord(null), 2000);
+  };
 
   return (
     <motion.div
@@ -22,17 +38,16 @@ export function PsychologyProfile({ profile }: PsychologyProfileProps) {
     >
       <Card padding="lg">
         <div className="flex items-center gap-3 mb-6">
-          <Brain size={18} className="text-[#F97316]" />
-          <h2 className="text-lg font-semibold text-[#FAFAFA]">DISC Psychology Profile</h2>
+          <h2 className="text-lg font-semibold text-[#FAFAFA]">Prospect Profile</h2>
           <div className="ml-auto flex items-center gap-1.5">
-            <span className="text-xs text-[#71717A]">Confidence:</span>
-            <span className="text-xs font-medium" style={{ color }}>
-              {Math.round(profile.confidence * 100)}%
+            <span className="text-xs text-[#71717A]">Match strength:</span>
+            <span className="text-xs font-semibold" style={{ color }}>
+              {matchStrength}/100
             </span>
           </div>
         </div>
 
-        {/* Main DISC type */}
+        {/* Communication style hero */}
         <div
           className="rounded-xl p-5 mb-5 flex items-start gap-4"
           style={{ background: bg, border: `1px solid ${color}30` }}
@@ -45,39 +60,54 @@ export function PsychologyProfile({ profile }: PsychologyProfileProps) {
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-lg font-bold" style={{ color }}>{profile.disc_label}</span>
-              <span className="text-sm text-[#71717A]">/ {profile.disc_type}-Type</span>
+              <span className="text-base font-bold" style={{ color }}>{discDisplay.label}</span>
             </div>
-            <p className="text-sm text-[#A1A1AA] leading-relaxed">{profile.summary}</p>
+            <p className="text-sm text-[#A1A1AA] leading-[1.6]">{profile.summary}</p>
           </div>
         </div>
 
+        {/* Core driver + decision style */}
+        {(profile.hidden_motivation || profile.negotiator_style) && (
+          <div className="mb-5 flex flex-wrap gap-2">
+            {profile.hidden_motivation && (
+              <div className="text-xs text-[#A1A1AA] bg-[#18181B] border border-[#27272A] rounded-lg px-3 py-2">
+                <span className="text-[#71717A]">Core driver: </span>{profile.hidden_motivation}
+              </div>
+            )}
+            {profile.negotiator_style && (
+              <div className="text-xs text-[#A1A1AA] bg-[#18181B] border border-[#27272A] rounded-lg px-3 py-2">
+                <span className="text-[#71717A]">Decision style: </span>{profile.negotiator_style}
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
           {/* Communication style */}
-          <div className="bg-[#18181B] rounded-xl p-4 border border-[#27272A]">
+          <div className="bg-[#0A0A0D] rounded-xl p-4 border border-[#27272A]">
             <div className="flex items-center gap-2 mb-3">
               <MessageSquare size={14} className="text-[#F97316]" />
-              <span className="text-xs font-semibold text-[#A1A1AA] uppercase tracking-wider">Communication Style</span>
+              <span className="text-xs font-semibold text-[#A1A1AA] uppercase tracking-wider">How they communicate</span>
             </div>
             <div className="flex flex-col gap-2">
               <div>
-                <p className="text-xs text-[#71717A] mb-1">Decision Driver</p>
+                <p className="text-xs text-[#71717A] mb-1">What drives decisions</p>
                 <p className="text-xs text-[#FAFAFA]">{profile.communication_style.decision_driver}</p>
               </div>
               <div>
-                <p className="text-xs text-[#71717A] mb-1">Email Tone</p>
+                <p className="text-xs text-[#71717A] mb-1">Best tone for emails</p>
                 <p className="text-xs text-[#FAFAFA]">{profile.communication_style.email_tone}</p>
               </div>
             </div>
           </div>
 
           {/* Opening strategy */}
-          <div className="bg-[#18181B] rounded-xl p-4 border border-[#27272A]">
+          <div className="bg-[#0A0A0D] rounded-xl p-4 border border-[#27272A]">
             <div className="flex items-center gap-2 mb-3">
-              <Zap size={14} className="text-[#F97316]" />
-              <span className="text-xs font-semibold text-[#A1A1AA] uppercase tracking-wider">Opening Strategy</span>
+              <Target size={14} className="text-[#F97316]" />
+              <span className="text-xs font-semibold text-[#A1A1AA] uppercase tracking-wider">Opening strategy</span>
             </div>
-            <p className="text-xs text-[#FAFAFA] leading-relaxed">{profile.opening_strategy}</p>
+            <p className="text-xs text-[#FAFAFA] leading-[1.6]">{profile.opening_strategy}</p>
           </div>
         </div>
 
@@ -86,7 +116,7 @@ export function PsychologyProfile({ profile }: PsychologyProfileProps) {
           <div>
             <div className="flex items-center gap-1.5 mb-2">
               <CheckCircle2 size={13} className="text-[#22C55E]" />
-              <span className="text-xs font-semibold text-[#A1A1AA] uppercase tracking-wider">Prefers</span>
+              <span className="text-xs font-semibold text-[#A1A1AA] uppercase tracking-wider">They respond well to</span>
             </div>
             <ul className="flex flex-col gap-1.5">
               {profile.communication_style.prefers.map((pref) => (
@@ -97,41 +127,60 @@ export function PsychologyProfile({ profile }: PsychologyProfileProps) {
             </ul>
           </div>
 
-          {/* Avoids */}
+          {/* What keeps them up at night */}
           <div>
             <div className="flex items-center gap-1.5 mb-2">
-              <AlertCircle size={13} className="text-[#EF4444]" />
-              <span className="text-xs font-semibold text-[#A1A1AA] uppercase tracking-wider">Avoids</span>
+              <AlertCircle size={13} className="text-[#EAB308]" />
+              <span className="text-xs font-semibold text-[#A1A1AA] uppercase tracking-wider">What keeps them up at night</span>
             </div>
             <ul className="flex flex-col gap-1.5">
-              {profile.communication_style.avoids.map((avoid) => (
-                <li key={avoid} className="text-xs text-[#A1A1AA] flex items-start gap-1.5">
-                  <span className="text-[#EF4444] mt-0.5">•</span> {avoid}
+              {profile.pain_triggers.map((pt) => (
+                <li key={pt} className="text-xs text-[#A1A1AA] flex items-start gap-1.5">
+                  <span className="text-[#EAB308] mt-0.5">•</span> {pt}
                 </li>
               ))}
             </ul>
           </div>
         </div>
 
-        {/* Power words */}
+        {/* Influence drivers */}
+        {profile.cialdini_levers && profile.cialdini_levers.length > 0 && (
+          <div className="mb-5">
+            <p className="text-xs font-semibold text-[#A1A1AA] uppercase tracking-wider mb-2">Influence drivers</p>
+            <div className="flex flex-wrap gap-1.5">
+              {profile.cialdini_levers.map((lever) => (
+                <span
+                  key={lever}
+                  className="px-2.5 py-1 rounded-lg text-xs font-medium bg-[#27272A] text-[#A1A1AA] border border-[#3F3F46]"
+                >
+                  {lever}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Words that resonate — clickable to copy */}
         <div className="mb-4">
-          <p className="text-xs font-semibold text-[#A1A1AA] uppercase tracking-wider mb-2">Power Words</p>
+          <p className="text-xs font-semibold text-[#A1A1AA] uppercase tracking-wider mb-2">Words that resonate <span className="text-[#3F3F46] font-normal normal-case">(click to copy)</span></p>
           <div className="flex flex-wrap gap-1.5">
             {profile.power_words.map((word) => (
-              <span
+              <button
                 key={word}
-                className="px-2.5 py-1 rounded-lg text-xs font-medium"
+                onClick={() => copyWord(word)}
+                className="px-2.5 py-1 rounded-lg text-xs font-medium flex items-center gap-1 transition-all hover:scale-105 active:scale-95"
                 style={{ background: `${color}15`, color }}
               >
                 {word}
-              </span>
+                {copiedWord === word ? <Check size={10} /> : <Copy size={10} className="opacity-50" />}
+              </button>
             ))}
           </div>
         </div>
 
-        {/* Avoid words */}
+        {/* Words to skip */}
         <div>
-          <p className="text-xs font-semibold text-[#A1A1AA] uppercase tracking-wider mb-2">Words to Avoid</p>
+          <p className="text-xs font-semibold text-[#A1A1AA] uppercase tracking-wider mb-2">Words to skip</p>
           <div className="flex flex-wrap gap-1.5">
             {profile.avoid_words.map((word) => (
               <span
